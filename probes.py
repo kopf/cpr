@@ -7,8 +7,8 @@ import requests
 
 
 class ProbingThread(threading.Thread):
-    def __init__(self, start_period, interval, retries, timeout):
-        super(ProbingThread, self).__init__()
+    def __init__(self, start_period, interval, retries, timeout, **kwargs):
+        super(ProbingThread, self).__init__(**kwargs)
         self.scheduler = sched.scheduler()
         self.interval = interval
         self.retries = retries

@@ -22,15 +22,15 @@ def scan_containers():
                 'start_period': container.labels.get('cpr.start_period', DEFAULT_START_PERIOD),
                 'interval': container.labels.get('cpr.interval', DEFAULT_INTERVAL),
                 'retries': container.labels.get('cpr.retries', DEFAULT_RETRIES),
-                'timeout': container.labels.get('cpr.timeout', DEFAULT_TIMEOUT),
+                'timeout': container.labels.get('cpr.timeout', DEFAULT_TIMEOUT)
             }
     return retval
 
 
 def main():
     threads = []
-    for container_name, config in scan_containers():
-        threads.append(HTTPProbe(**config))
+    for container_name, config in scan_containers().items():
+        threads.append(HTTPProbe(name=container_name, **config))
     for thread in threads:
         thread.start()
     while True:
