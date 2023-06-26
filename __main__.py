@@ -2,6 +2,7 @@
 import logging
 import time
 import threading
+import os
 import sys
 
 import docker
@@ -53,4 +54,7 @@ if __name__ == '__main__':
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(log_formatter)
     logging.getLogger().addHandler(console_handler)
+    if not os.path.exists('/var/run/docker.sock'):
+        logging.exception("Unable to connect to docker. Have you mounted /var/run/docker.sock in the docker container?")
+        sys.exit(-1)
     main()
