@@ -2,6 +2,7 @@
 import logging
 import time
 import threading
+import sys
 
 import docker
 
@@ -33,6 +34,9 @@ def main():
     threads = []
     for container_name, config in scan_containers().items():
         threads.append(HTTPProbe(name=container_name, **config))
+    if not threads:
+        logging.error("No cpr-enabled containers found! Exiting...")
+        sys.exit(-1)
     for thread in threads:
         thread.start()
     while True:
