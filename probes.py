@@ -7,7 +7,7 @@ import requests
 
 
 class ProbingThread(threading.Thread):
-    def __init__(self, start_period, interval, retries, timeout, **kwargs):
+    def __init__(self, start_period, interval, retries, timeout, event, **kwargs):
         super(ProbingThread, self).__init__(**kwargs)
         self.scheduler = sched.scheduler()
         self.interval = interval
@@ -15,13 +15,17 @@ class ProbingThread(threading.Thread):
         self.timeout = timeout
         self.results = []
         self.healthy = True
+        self.event = event
         self.scheduler.enter(start_period, 1, self.trigger)
 
     def run(self):
         self.scheduler.run()
 
+    def probe(self, *args, **kwargs):
+        raise NotImplementedError()
+
     def trigger(self):
-        if not self.healthy:
+        if not self.healthy or not self.event:
             return
         self.scheduler.enter(self.interval, 1, self.trigger)
         result = self.probe()

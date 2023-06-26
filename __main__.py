@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import logging
 import time
+import threading
 
 import docker
 
@@ -22,7 +23,8 @@ def scan_containers():
                 'start_period': container.labels.get('cpr.start_period', DEFAULT_START_PERIOD),
                 'interval': container.labels.get('cpr.interval', DEFAULT_INTERVAL),
                 'retries': container.labels.get('cpr.retries', DEFAULT_RETRIES),
-                'timeout': container.labels.get('cpr.timeout', DEFAULT_TIMEOUT)
+                'timeout': container.labels.get('cpr.timeout', DEFAULT_TIMEOUT),
+                'event': threading.Event()
             }
     return retval
 
