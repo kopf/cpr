@@ -2,16 +2,39 @@
 import logging
 import time
 
+import docker
+
 from probes import HTTPProbe
+
+DEFAULT_START_PERIOD = 1
+DEFAULT_INTERVAL = 3
+DEFAULT_RETRIES = 2
+DEFAULT_TIMEOUT = 1
+
+
+def scan_containers():
+    client = docker.from_env()
+    retval = {}
+    for container in client.containers.list():
+        if container.labels.get('cpr.enabled') == 'true':
+            retval[container.name] = {
+                'url': container.labels['cpr.url'],
+                'start_period': container.labels.get('cpr.start_period', DEFAULT_START_PERIOD),
+                'interval': container.labels.get('cpr.interval', DEFAULT_INTERVAL),
+                'retries': container.labels.get('cpr.retries', DEFAULT_RETRIES),
+                'timeout': container.labels.get('cpr.timeout', DEFAULT_TIMEOUT),
+            }
+    return retval
 
 
 def main():
-    t1 = HTTPProbe('http://blog', start_period=0, interval=1, retries=2, timeout=1)
-    t2 = HTTPProbe('http://shop', start_period=1, interval=1, retries=2, timeout=1)
-    t1.start()
-    t2.start()
+    threads = []
+    for container_name, config in scan_containers():
+        threads.append(HTTPProbe(**config))
+    for thread in threads:
+        thread.start()
     while True:
-        for thread in [t1, t2]:
+        for thread in threads:
             if not thread.healthy:
                 logging.info(f'{thread} is unhealthy!')
             time.sleep(0.5)
