@@ -3,6 +3,8 @@ import random
 import threading
 import sched
 
+import requests
+
 
 class ProbingThread(threading.Thread):
     def __init__(self, start_period, interval, retries, timeout):
@@ -35,10 +37,10 @@ class HTTPProbe(ProbingThread):
         self.url = url
 
     def probe(self):
-        result = random.choice([True, False])
-
-        if result:
-            logging.debug(f'{self.url} - Success. {self.results}')
-        else:
-            logging.debug(f'{self.url} - Failure. {self.results}')
-        return result
+        try:
+            requests.get(self.url, timeout=self.timeout).raise_for_status()
+        except requests.exceptions.RequestException as e:
+            logging.warning(f'Probed {self.url} - Failure: {e}')
+            return False
+        logging.debug(f'Probed {self.url} - Success.')
+        return True
