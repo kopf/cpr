@@ -13,7 +13,7 @@ def test_httpprobe_no_errors(httpprobe, blog_url, interval):
     assert responses.assert_call_count(blog_url, SLEEP_TIME / interval) is True
     # Ensure all status codes were 200:
     assert [call.response.status_code for call in responses.calls] == [200] * int(SLEEP_TIME / interval)
-    assert httpprobe.healthy is True
+    assert httpprobe.healthy.is_set()
 
 
 @responses.activate
@@ -26,5 +26,5 @@ def test_httpprobe_retries(httpprobe, blog_url, retry_count):
     httpprobe.start()
     httpprobe.join()
     assert responses.assert_call_count(blog_url, 1 + retry_count) is True
-    assert httpprobe.healthy is False
+    assert not httpprobe.healthy.is_set()
 
