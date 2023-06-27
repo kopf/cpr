@@ -26,19 +26,13 @@ def scan_containers():
             event.set()
             retval[container.name] = {
                 'url': container.labels['cpr.url'],
-                'start_period': container.labels.get('cpr.start_period', DEFAULT_START_PERIOD),
-                'interval': container.labels.get('cpr.interval', DEFAULT_INTERVAL),
-                'retries': container.labels.get('cpr.retries', DEFAULT_RETRIES),
-                'timeout': container.labels.get('cpr.timeout', DEFAULT_TIMEOUT),
+                'start_period': int(container.labels.get('cpr.start_period', DEFAULT_START_PERIOD)),
+                'interval': int(container.labels.get('cpr.interval', DEFAULT_INTERVAL)),
+                'retries': int(container.labels.get('cpr.retries', DEFAULT_RETRIES)),
+                'timeout': int(container.labels.get('cpr.timeout', DEFAULT_TIMEOUT)),
                 'event': event
             }
     return retval
-
-
-def restart_container(container_name):
-    client = docker.from_env()
-    logging.info(f'Restarting {container_name}')
-    return client.containers.get(container_name).restart()
 
 
 def main():
@@ -54,11 +48,8 @@ def main():
     for thread in threads:
         thread.start()
     while True:
-        for thread in threads:
-            if not thread.healthy:
-                logging.info(f'{thread.name} is unhealthy!')
-                restart_container(thread.name)
-            time.sleep(TICK_TIME)
+        time.sleep(TICK_TIME)
+        # TODO: turn this thread into a purely container-scanning thread
 
 
 if __name__ == '__main__':
