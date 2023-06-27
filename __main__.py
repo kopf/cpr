@@ -14,7 +14,7 @@ DEFAULT_INTERVAL = int(os.getenv('CPR_DEFAULT_INTERVAL', 3))
 DEFAULT_RETRIES = int(os.getenv('CPR_DEFAULT_RETRIES', 2))
 DEFAULT_TIMEOUT = int(os.getenv('CPR_DEFAULT_TIMEOUT', 1))
 REFRESH_TIME = int(os.getenv('CPR_REFRESH_TIME', 60))
-LOGLEVEL = getattr(logging, os.getenv('CPR_LOGLEVEL', 'DEBUG'))
+LOGLEVEL = getattr(logging, os.getenv('CPR_LOGLEVEL', 'INFO'))
 
 
 def scan_containers():
