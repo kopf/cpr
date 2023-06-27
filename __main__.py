@@ -14,6 +14,7 @@ DEFAULT_INTERVAL = int(os.getenv('CPR_DEFAULT_INTERVAL', 3))
 DEFAULT_RETRIES = int(os.getenv('CPR_DEFAULT_RETRIES', 2))
 DEFAULT_TIMEOUT = int(os.getenv('CPR_DEFAULT_TIMEOUT', 1))
 TICK_TIME = float(os.getenv('CPR_TICK_TIME', 0.5))
+LOGLEVEL = getattr(logging, os.getenv('CPR_LOGLEVEL', 'DEBUG'))
 
 
 def scan_containers():
@@ -62,7 +63,7 @@ def main():
 
 if __name__ == '__main__':
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(LOGLEVEL)
     log_formatter = logging.Formatter("%(asctime)s [%(levelname)s] [%(threadName)s]: %(message)s")
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(log_formatter)
