@@ -34,11 +34,14 @@ def scan_containers():
 
 def main():
     threads = []
-    for container_name, config in scan_containers().items():
+    containers = scan_containers()
+    for container_name, config in containers.items():
         threads.append(HTTPProbe(name=container_name, **config))
     if not threads:
         logging.error("No cpr-enabled containers found! Exiting...")
         sys.exit(-1)
+    logging.info(f'Detected following cpr-enabled containers: {containers}')
+    logging.info('Starting probe threads...')
     for thread in threads:
         thread.start()
     while True:
