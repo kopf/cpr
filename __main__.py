@@ -13,7 +13,7 @@ DEFAULT_START_PERIOD = int(os.getenv('CPR_DEFAULT_START_PERIOD', 1))
 DEFAULT_INTERVAL = int(os.getenv('CPR_DEFAULT_INTERVAL', 3))
 DEFAULT_RETRIES = int(os.getenv('CPR_DEFAULT_RETRIES', 2))
 DEFAULT_TIMEOUT = int(os.getenv('CPR_DEFAULT_TIMEOUT', 1))
-TICK_TIME = float(os.getenv('CPR_TICK_TIME', 0.5))
+REFRESH_TIME = int(os.getenv('CPR_REFRESH_TIME', 60))
 LOGLEVEL = getattr(logging, os.getenv('CPR_LOGLEVEL', 'DEBUG'))
 
 
@@ -37,19 +37,22 @@ def scan_containers():
 
 def main():
     threads = []
-    containers = scan_containers()
-    for container_name, config in containers.items():
-        threads.append(HTTPProbe(name=container_name, **config))
-    if not threads:
-        logging.error("No cpr-enabled containers found! Exiting...")
-        sys.exit(-1)
-    logging.info(f'Detected following cpr-enabled containers: {containers}')
-    logging.info('Starting probe threads...')
-    for thread in threads:
-        thread.start()
+    seen_containers = set()
     while True:
-        time.sleep(TICK_TIME)
-        # TODO: turn this thread into a purely container-scanning thread
+        containers = scan_containers()
+        for container_name, config in containers.items():
+            if container_name not in seen_containers:
+                seen_containers.add(container_name)
+                threads.append(HTTPProbe(name=container_name, **config))
+        if not threads:
+            logging.error("No cpr-enabled containers found! Exiting...")
+            sys.exit(-1)
+        logging.info(f'Detected following cpr-enabled containers: {containers}')
+        logging.info('Starting probe threads...')
+        for thread in threads:
+            if not thread.is_alive():
+                thread.start()
+        time.sleep(REFRESH_TIME)
 
 
 if __name__ == '__main__':
