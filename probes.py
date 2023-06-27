@@ -7,7 +7,7 @@ import requests
 
 
 class ProbingThread(threading.Thread):
-    def __init__(self, start_period, interval, retries, timeout, healthy, **kwargs):
+    def __init__(self, start_period, interval, retries, timeout, **kwargs):
         super(ProbingThread, self).__init__(**kwargs)
         self.start_period = start_period
         self.scheduler = sched.scheduler()
@@ -15,7 +15,7 @@ class ProbingThread(threading.Thread):
         self.retries = retries
         self.timeout = timeout
         self.results = []
-        self.healthy = healthy
+        self.unhealthy = threading.Event()
         self.restarting = False
         self.scheduler.enter(self.start_period, 1, self.trigger)
 
@@ -31,11 +31,11 @@ class ProbingThread(threading.Thread):
         logging.warning(f'Restarting {self.name}')
         client.containers.get(self.name).restart()
         self.restarting = False
-        self.healthy.set()
+        self.unhealthy.clear()
         self.scheduler.enter(self.start_period, 1, self.trigger)
 
     def trigger(self):
-        if not self.healthy.is_set():
+        if self.unhealthy.is_set():
             if not self.restarting:
                 self.restart_container()
             return
@@ -45,10 +45,10 @@ class ProbingThread(threading.Thread):
         self.results = self.results[-self.retries:]
         if len(self.results) == self.retries and all(not i for i in self.results):
             self.scheduler.cancel(next_scheduled_probe)
-            self.healthy.clear()
+            self.unhealthy.set()
             self.restart_container()
         else:
-            self.healthy.set()
+            self.unhealthy.clear()
 
 
 class HTTPProbe(ProbingThread):

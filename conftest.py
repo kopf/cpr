@@ -1,7 +1,9 @@
 import threading
+import unittest.mock as mock
 
 from probes import HTTPProbe
 
+import docker
 import pytest
 
 
@@ -21,10 +23,14 @@ def timeout():
 def interval():
     return 0.1
 
+
+@pytest.fixture
+def mocked_docker():
+    with mock.patch.object(docker, 'from_env', return_value=mock.MagicMock):
+        yield
+
 @pytest.fixture(scope='function')
 def httpprobe(blog_url, retry_count, timeout, interval):
-    healthy = threading.Event()
-    healthy.set()
-    probe = HTTPProbe(blog_url, start_period=0, interval=interval, retries=retry_count, timeout=timeout, healthy=healthy)
+    probe = HTTPProbe(blog_url, start_period=0, interval=interval, retries=retry_count, timeout=timeout)
     yield probe
-    probe.healthy.clear()
+    probe.unhealthy.set()
