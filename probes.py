@@ -24,7 +24,7 @@ class ProbingThread(threading.Thread):
         raise NotImplementedError()
 
     def trigger(self):
-        if not self.healthy or not self.event:
+        if not self.healthy or not self.event.is_set():
             return
         self.scheduler.enter(self.interval, 1, self.trigger)
         result = self.probe()

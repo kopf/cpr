@@ -21,13 +21,15 @@ def scan_containers():
     retval = {}
     for container in client.containers.list():
         if container.labels.get('cpr.enabled') == 'true':
+            event = threading.Event()
+            event.set()
             retval[container.name] = {
                 'url': container.labels['cpr.url'],
                 'start_period': container.labels.get('cpr.start_period', DEFAULT_START_PERIOD),
                 'interval': container.labels.get('cpr.interval', DEFAULT_INTERVAL),
                 'retries': container.labels.get('cpr.retries', DEFAULT_RETRIES),
                 'timeout': container.labels.get('cpr.timeout', DEFAULT_TIMEOUT),
-                'event': threading.Event()
+                'event': event
             }
     return retval
 

@@ -23,6 +23,8 @@ def interval():
 
 @pytest.fixture(scope='function')
 def httpprobe(blog_url, retry_count, timeout, interval):
-    probe = HTTPProbe(blog_url, start_period=0, interval=interval, retries=retry_count, timeout=timeout, event=threading.Event())
+    event = threading.Event()
+    event.set()
+    probe = HTTPProbe(blog_url, start_period=0, interval=interval, retries=retry_count, timeout=timeout, event=event)
     yield probe
-    probe.event = False
+    probe.event.clear()
