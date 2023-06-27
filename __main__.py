@@ -9,7 +9,7 @@ import docker
 
 from probes import HTTPProbe
 
-DEFAULT_START_PERIOD = int(os.getenv('CPR_DEFAULT_START_PERIOD', 1))
+DEFAULT_START_PERIOD = int(os.getenv('CPR_DEFAULT_START_PERIOD', 5))
 DEFAULT_INTERVAL = int(os.getenv('CPR_DEFAULT_INTERVAL', 3))
 DEFAULT_RETRIES = int(os.getenv('CPR_DEFAULT_RETRIES', 2))
 DEFAULT_TIMEOUT = int(os.getenv('CPR_DEFAULT_TIMEOUT', 1))
