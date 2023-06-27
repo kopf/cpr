@@ -29,7 +29,7 @@ class ProbingThread(threading.Thread):
     def restart_container(self):
         self.restarting = True
         client = docker.from_env()
-        logging.info(f'Restarting {self.name}')
+        logging.warning(f'Restarting {self.name}')
         client.containers.get(self.name).restart()
         self.restarting = False
         self.healthy = True
