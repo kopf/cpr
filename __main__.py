@@ -32,6 +32,12 @@ def scan_containers():
     return retval
 
 
+def restart_container(container_name):
+    client = docker.from_env()
+    logging.info(f'Restarting {container_name}')
+    return client.containers.get(container_name).restart()
+
+
 def main():
     threads = []
     containers = scan_containers()
@@ -47,7 +53,8 @@ def main():
     while True:
         for thread in threads:
             if not thread.healthy:
-                logging.info(f'{thread} is unhealthy!')
+                logging.info(f'{thread.name} is unhealthy!')
+                restart_container(thread.name)
             time.sleep(TICK_TIME)
 
 
