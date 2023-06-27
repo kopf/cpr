@@ -45,10 +45,10 @@ def main():
                 seen_containers.add(container_name)
                 threads.append(HTTPProbe(name=container_name, **config))
         if not threads:
-            logging.error("No cpr-enabled containers found! Exiting...")
-            sys.exit(-1)
-        logging.info(f'Detected following cpr-enabled containers: {containers}')
-        logging.info('Starting probe threads...')
+            logging.critical("No cpr-enabled containers found!")
+        else:
+            logging.info(f'Detected following cpr-enabled containers: {containers}')
+            logging.info('Starting probe threads...')
         for thread in threads:
             if not thread.is_alive():
                 thread.start()
