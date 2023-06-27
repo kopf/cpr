@@ -9,10 +9,11 @@ import docker
 
 from probes import HTTPProbe
 
-DEFAULT_START_PERIOD = 1
-DEFAULT_INTERVAL = 3
-DEFAULT_RETRIES = 2
-DEFAULT_TIMEOUT = 1
+DEFAULT_START_PERIOD = int(os.getenv('CPR_DEFAULT_START_PERIOD', 1))
+DEFAULT_INTERVAL = int(os.getenv('CPR_DEFAULT_INTERVAL', 3))
+DEFAULT_RETRIES = int(os.getenv('CPR_DEFAULT_RETRIES', 2))
+DEFAULT_TIMEOUT = int(os.getenv('CPR_DEFAULT_TIMEOUT', 1))
+TICK_TIME = float(os.getenv('CPR_TICK_TIME', 0.5))
 
 
 def scan_containers():
@@ -44,7 +45,7 @@ def main():
         for thread in threads:
             if not thread.healthy:
                 logging.info(f'{thread} is unhealthy!')
-            time.sleep(0.5)
+            time.sleep(TICK_TIME)
 
 
 if __name__ == '__main__':
