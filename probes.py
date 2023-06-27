@@ -40,12 +40,13 @@ class ProbingThread(threading.Thread):
         if not self.healthy or not self.event.is_set():
             if not self.restarting:
                 self.restart_container()
-                return
-        self.scheduler.enter(self.interval, 1, self.trigger)
+            return
+        next_scheduled_probe = self.scheduler.enter(self.interval, 1, self.trigger)
         result = self.probe()
         self.results.append(result)
         self.results = self.results[-self.retries:]
         if len(self.results) == self.retries and all(not i for i in self.results):
+            self.scheduler.cancel(next_scheduled_probe)
             self.healthy = False
             self.restart_container()
         else:
