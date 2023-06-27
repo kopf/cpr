@@ -47,6 +47,7 @@ class ProbingThread(threading.Thread):
         self.results = self.results[-self.retries:]
         if len(self.results) == self.retries and all(not i for i in self.results):
             self.healthy = False
+            self.restart_container()
         else:
             self.healthy = True
 
