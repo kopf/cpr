@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import logging
 import time
-import threading
 import os
 import sys
 
