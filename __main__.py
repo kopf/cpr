@@ -49,8 +49,8 @@ def main():
             if not thread.is_alive():
                 thread.start()
                 new_threads.append(thread.name)
-            if new_threads:
-                logging.info(f'Started {len(new_threads)} new probe thread{"s" if len(new_threads)>1 else ""}: {new_threads}')
+        if new_threads:
+            logging.info(f'Started {len(new_threads)} new probe thread{"s" if len(new_threads)>1 else ""}: {new_threads}')
         time.sleep(REFRESH_TIME)
 
 
