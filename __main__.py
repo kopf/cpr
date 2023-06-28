@@ -45,10 +45,13 @@ def main():
             logging.critical("No cpr-enabled containers found!")
         else:
             logging.info(f'Detected following cpr-enabled containers: {containers}')
-            logging.info('Starting probe threads...')
+        count = 0
         for thread in threads:
             if not thread.is_alive():
                 thread.start()
+                count += 1
+            if count:
+                logging.info(f'Started {count} probe threads.')
         time.sleep(REFRESH_TIME)
 
 
