@@ -1,9 +1,12 @@
 import logging
 import threading
 import sched
+import os
 
 import docker
 import requests
+
+CPR_VERSION = os.getenv('CPR_VERSION')
 
 
 class ProbingThread(threading.Thread):
@@ -56,7 +59,7 @@ class HTTPProbe(ProbingThread):
         super(HTTPProbe, self).__init__(*args, **kwargs)
         self.url = url
         self.headers = {
-            'User-Agent': 'cpr'
+            'User-Agent': f'cpr/{CPR_VERSION}'
         }
 
     def probe(self):

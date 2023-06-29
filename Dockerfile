@@ -6,4 +6,8 @@ RUN pip install --no-cache-dir -r /cpr/requirements.txt
 
 COPY . /cpr
 
+ARG CPR_BUILD_VER
+
+ENV CPR_VERSION=$CPR_BUILD_VER
+
 ENTRYPOINT ["python", "/cpr"]
