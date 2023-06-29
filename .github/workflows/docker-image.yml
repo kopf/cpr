@@ -39,6 +39,7 @@ jobs:
     - name: Docker Build
       run: |
         echo CPR_BUILD_VER=$(date +%Y.%m.%d).${{github.run_number}} >> $GITHUB_ENV
+        echo $CPR_BUILD_VER
         docker build . --file Dockerfile --build-arg CPR_BUILD_VER=$CPR_BUILD_VER -t kopf/cpr:latest -t kopf/cpr:$CPR_BUILD_VER
     - name: Docker Push
       run: |
