@@ -37,6 +37,8 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Docker Build
-      run: docker build . --file Dockerfile --tag kopf/cpr:$(date +%Y.%m.%d).${{github.run_number}}
+      run: docker build . --file Dockerfile -t kopf/cpr:latest -t kopf/cpr:$(date +%Y.%m.%d).${{github.run_number}}
     - name: Docker Push
-      run: docker push kopf/cpr:$(date +%Y.%m.%d).${{github.run_number}}
+      run: |
+        docker push kopf/cpr:$(date +%Y.%m.%d).${{github.run_number}}
+        docker push kopf/cpr:latest
