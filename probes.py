@@ -55,10 +55,13 @@ class HTTPProbe(ProbingThread):
     def __init__(self, url, *args, **kwargs):
         super(HTTPProbe, self).__init__(*args, **kwargs)
         self.url = url
+        self.headers = {
+            'User-Agent': 'cpr'
+        }
 
     def probe(self):
         try:
-            requests.get(self.url, timeout=self.timeout).raise_for_status()
+            requests.get(self.url, timeout=self.timeout, headers=self.headers).raise_for_status()
         except requests.exceptions.RequestException as e:
             logging.warning(f'Probed {self.url} - Failure: {e}')
             return False
