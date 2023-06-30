@@ -72,5 +72,5 @@ class HTTPProbe(ProbingThread):
         except requests.exceptions.RequestException as e:
             logging.warning(f'Probed {self.url} - Failure: {e}')
             return False
-        logging.debug(f'Probed {self.url} - Success.')
+        logging.debug(f'Probed {self.url} with headers {self.headers} - Success.')
         return True
