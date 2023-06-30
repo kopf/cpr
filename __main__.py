@@ -27,9 +27,13 @@ def scan_containers():
                 'start_period': int(container.labels.get('cpr.start_period', DEFAULT_START_PERIOD)),
                 'interval': int(container.labels.get('cpr.interval', DEFAULT_INTERVAL)),
                 'retries': int(container.labels.get('cpr.retries', DEFAULT_RETRIES)),
-                'timeout': int(container.labels.get('cpr.timeout', DEFAULT_TIMEOUT)),
-                'user_headers': json.loads(container.labels.get('cpr.headers', '{}'))
+                'timeout': int(container.labels.get('cpr.timeout', DEFAULT_TIMEOUT))
             }
+            user_headers = container.labels.get('cpr.headers', '{}')
+            try:
+                retval[container.name]['user_headers'] = json.loads(user_headers)
+            except json.decoder.JSONDecodeError as e:
+                logging.error(f"Could not parse JSON value {user_headers} - {e}")
     return retval
 
 
