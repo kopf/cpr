@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import logging
 import time
 import os
@@ -26,7 +27,8 @@ def scan_containers():
                 'start_period': int(container.labels.get('cpr.start_period', DEFAULT_START_PERIOD)),
                 'interval': int(container.labels.get('cpr.interval', DEFAULT_INTERVAL)),
                 'retries': int(container.labels.get('cpr.retries', DEFAULT_RETRIES)),
-                'timeout': int(container.labels.get('cpr.timeout', DEFAULT_TIMEOUT))
+                'timeout': int(container.labels.get('cpr.timeout', DEFAULT_TIMEOUT)),
+                'user_headers': json.loads(container.labels.get('cpr.headers', '{}'))
             }
     return retval
 

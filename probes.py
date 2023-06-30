@@ -55,12 +55,14 @@ class ProbingThread(threading.Thread):
 
 
 class HTTPProbe(ProbingThread):
-    def __init__(self, url, *args, **kwargs):
+    def __init__(self, url, *args, user_headers=None, **kwargs):
         super(HTTPProbe, self).__init__(*args, **kwargs)
         self.url = url
         self.headers = {
             'User-Agent': f'cpr/{CPR_VERSION}'
         }
+        if user_headers is not None:
+            self.headers.update(user_headers)
 
     def probe(self):
         try:
