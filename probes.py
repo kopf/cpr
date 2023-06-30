@@ -66,7 +66,9 @@ class HTTPProbe(ProbingThread):
 
     def probe(self):
         try:
-            requests.get(self.url, timeout=self.timeout, headers=self.headers).raise_for_status()
+            requests.get(
+                self.url, timeout=self.timeout, headers=self.headers, allow_redirects=False
+            ).raise_for_status()
         except requests.exceptions.RequestException as e:
             logging.warning(f'Probed {self.url} - Failure: {e}')
             return False
