@@ -20,9 +20,9 @@ class ProbingThread(threading.Thread):
         self.results = []
         self.unhealthy = threading.Event()
         self.restarting = False
-        self.scheduler.enter(self.start_period, 1, self.trigger)
 
     def run(self):
+        self.scheduler.enter(self.start_period, 1, self.trigger)
         self.scheduler.run()
 
     def probe(self, *args, **kwargs):
