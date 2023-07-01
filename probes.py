@@ -29,13 +29,15 @@ class ProbingThread(threading.Thread):
         raise NotImplementedError()
 
     def restart_container(self):
+        if self.restarting:
+            return
         self.restarting = True
         client = docker.from_env()
         logging.warning(f'Restarting {self.name}')
         client.containers.get(self.name).restart()
         self.restarting = False
         self.unhealthy.clear()
-        self.scheduler.enter(self.start_period, 1, self.trigger)
+        self.scheduler.enter(self.start_period + 10, 1, self.trigger)
 
     def trigger(self):
         if self.unhealthy.is_set():
