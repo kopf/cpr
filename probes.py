@@ -20,6 +20,7 @@ class ProbingThread(threading.Thread):
         self.results = []
         self.unhealthy = threading.Event()
         self.restarting = False
+        self.client = docker.from_env()
 
     def run(self):
         self.scheduler.enter(self.start_period, 1, self.trigger)
@@ -32,9 +33,8 @@ class ProbingThread(threading.Thread):
         if self.restarting:
             return
         self.restarting = True
-        client = docker.from_env()
         logging.warning(f'Restarting {self.name}')
-        client.containers.get(self.name).restart()
+        self.client.containers.get(self.name).restart()
         self.restarting = False
         self.unhealthy.clear()
         self.scheduler.enter(self.start_period + 10, 1, self.trigger)
