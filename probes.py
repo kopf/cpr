@@ -35,11 +35,12 @@ class ProbingThread(threading.Thread):
         self.restarting = True
         logging.warning(f'Restarting {self.name}')
         self.client.containers.get(self.name).restart()
-        self.restarting = False
         self.unhealthy.clear()
-        self.scheduler.enter(self.start_period + 10, 1, self.trigger)
+        self.scheduler.enter(self.start_period, 1, self.trigger, restarted=True)
 
-    def trigger(self):
+    def trigger(self, restarted=False):
+        if restarted:
+            self.restarting = False
         if self.unhealthy.is_set():
             if not self.restarting:
                 self.restart_container()
