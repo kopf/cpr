@@ -1,12 +1,11 @@
 import logging
 import threading
 import sched
-import os
 
 import docker
 import requests
 
-CPR_VERSION = os.getenv('CPR_VERSION')
+import settings
 
 
 class ProbingThread(threading.Thread):
@@ -62,7 +61,7 @@ class HTTPProbe(ProbingThread):
         super(HTTPProbe, self).__init__(*args, **kwargs)
         self.url = url
         self.headers = {
-            'User-Agent': f'cpr/{CPR_VERSION}'
+            'User-Agent': f'cpr/{settings.CPR_VERSION}'
         }
         if user_headers is not None:
             self.headers.update(user_headers)

@@ -8,13 +8,7 @@ import sys
 import docker
 
 from probes import HTTPProbe
-
-DEFAULT_START_PERIOD = int(os.getenv('CPR_DEFAULT_START_PERIOD', 8))
-DEFAULT_INTERVAL = int(os.getenv('CPR_DEFAULT_INTERVAL', 3))
-DEFAULT_RETRIES = int(os.getenv('CPR_DEFAULT_RETRIES', 2))
-DEFAULT_TIMEOUT = int(os.getenv('CPR_DEFAULT_TIMEOUT', 1))
-REFRESH_TIME = int(os.getenv('CPR_REFRESH_TIME', 60))
-LOGLEVEL = getattr(logging, os.getenv('CPR_LOGLEVEL', 'INFO'))
+import settings
 
 
 def scan_containers():
@@ -24,10 +18,10 @@ def scan_containers():
         if container.labels.get('cpr.enabled') == 'true':
             retval[container.name] = {
                 'url': container.labels['cpr.url'],
-                'start_period': int(container.labels.get('cpr.start_period', DEFAULT_START_PERIOD)),
-                'interval': int(container.labels.get('cpr.interval', DEFAULT_INTERVAL)),
-                'retries': int(container.labels.get('cpr.retries', DEFAULT_RETRIES)),
-                'timeout': int(container.labels.get('cpr.timeout', DEFAULT_TIMEOUT))
+                'start_period': int(container.labels.get('cpr.start_period', settings.DEFAULT_START_PERIOD)),
+                'interval': int(container.labels.get('cpr.interval', settings.DEFAULT_INTERVAL)),
+                'retries': int(container.labels.get('cpr.retries', settings.DEFAULT_RETRIES)),
+                'timeout': int(container.labels.get('cpr.timeout', settings.DEFAULT_TIMEOUT))
             }
             user_headers = container.labels.get('cpr.headers', '{}')
             try:
@@ -57,16 +51,17 @@ def main():
                 new_threads.append(thread.name)
         if new_threads:
             logging.info(f'Started {len(new_threads)} new probe thread{"s" if len(new_threads)>1 else ""}: {new_threads}')
-        time.sleep(REFRESH_TIME)
+        time.sleep(settings.REFRESH_TIME)
 
 
 if __name__ == '__main__':
     logger = logging.getLogger()
-    logger.setLevel(LOGLEVEL)
+    logger.setLevel(settings.LOGLEVEL)
     log_formatter = logging.Formatter("%(asctime)s [%(levelname)s] [%(threadName)s]: %(message)s")
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(log_formatter)
     logging.getLogger().addHandler(console_handler)
+    logging.info(f'cpr {settings.CPR_VERSION} starting...')
     if not os.path.exists('/var/run/docker.sock'):
         logging.exception("Unable to connect to docker. Have you mounted /var/run/docker.sock in the docker container?")
         sys.exit(-1)
