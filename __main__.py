@@ -18,10 +18,10 @@ def scan_containers():
         if container.labels.get('cpr.enabled') == 'true':
             retval[container.name] = {
                 'url': container.labels['cpr.url'],
-                'start_period': int(container.labels.get('cpr.start_period', settings.DEFAULT_START_PERIOD)),
-                'interval': int(container.labels.get('cpr.interval', settings.DEFAULT_INTERVAL)),
+                'start_period': float(container.labels.get('cpr.start_period', settings.DEFAULT_START_PERIOD)),
+                'interval': float(container.labels.get('cpr.interval', settings.DEFAULT_INTERVAL)),
                 'retries': int(container.labels.get('cpr.retries', settings.DEFAULT_RETRIES)),
-                'timeout': int(container.labels.get('cpr.timeout', settings.DEFAULT_TIMEOUT))
+                'timeout': float(container.labels.get('cpr.timeout', settings.DEFAULT_TIMEOUT))
             }
             user_headers = container.labels.get('cpr.headers', '{}')
             try:
