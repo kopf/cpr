@@ -64,3 +64,7 @@ services:
 * `CPR_DEFAULT_TIMEOUT` (default: `1`) - The default HTTP timeout (in seconds) to use when probing a container.
 * `CPR_REFRESH_TIME` (default: `60`) - The default amount of time (in seconds) to wait before scanning for new `cpr`-enabled containers to probe.  
 * `CPR_LOGLEVEL` (default: `INFO`) - The default log level. Set to `DEBUG` for more verbose logging. 
+
+## Known limitations
+
+* `cpr` won't detect changes to your containers' logs after they've been scanned. In order to ensure cpr respects changes after the fact, be sure to restart `cpr` once you've redeployed your services with new labels. 
