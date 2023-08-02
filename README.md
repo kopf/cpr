@@ -1,5 +1,5 @@
 # cpr
-cpr monitors your docker containers, performing healthchecks defined in docker labels, and restarting them when necessary. 
+cpr monitors the health of your docker containers and restarts them when necessary. 
 
 ## Motivation
 
