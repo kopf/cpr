@@ -15,7 +15,8 @@ an AWS EC2 `t3a.small` instance:
 We can see the CPU usage drop from ~13% to ~5% after having switched to `cpr` just before 08:00. 
 
 For reference, this was a `t3a.small` instance with healthchecks enabled for 3 containers, each of which had
-a default interval of 2 seconds. 
+a default interval of 2 seconds. The instance was essentially idling, with no traffic from outside. (The spikes
+we see early in the morning are cronjobs running.)
 
 ## Example usage
 
