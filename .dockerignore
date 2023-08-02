@@ -1,2 +1,3 @@
 .pytest_cache
 .github
+*.png
