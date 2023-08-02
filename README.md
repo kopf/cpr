@@ -10,7 +10,7 @@ especially on smaller cloud instances.
 For example, here we see the difference in CPU utilization between `docker-autoheal` and `cpr` on 
 an AWS EC2 `t3a.small` instance:
 
-[cpu_utilization_screenshot](cpu_utilization_screenshot.png)
+![cpu_utilization_screenshot](cpu_utilization_screenshot.png)
 
 We can see the CPU usage drop from ~13% to ~5% after having switched to `cpr` just before 08:00. 
 
