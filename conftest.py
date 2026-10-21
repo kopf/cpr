@@ -26,11 +26,15 @@ def interval():
 
 @pytest.fixture
 def mocked_docker():
-    with mock.patch.object(docker, 'from_env', return_value=mock.MagicMock):
+    with mock.patch.object(docker, 'from_env', return_value=mock.MagicMock()):
         yield
 
 @pytest.fixture(scope='function')
-def httpprobe(blog_url, retry_count, timeout, interval):
+def httpprobe(blog_url, retry_count, timeout, interval, mocked_docker):
     probe = HTTPProbe(blog_url, start_period=0, interval=interval, retries=retry_count, timeout=timeout)
     yield probe
+    # With restart disabled, the next trigger sees `unhealthy` and stops rescheduling
+    probe.restart_container = lambda: None
     probe.unhealthy.set()
+    if probe.is_alive():
+        probe.join()
