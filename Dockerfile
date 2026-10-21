@@ -1,5 +1,9 @@
 FROM python:3.15-slim-bookworm
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tini \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=ghcr.io/astral-sh/uv:0.12.23 /uv /bin/uv
 
 ENV UV_COMPILE_BYTECODE=1 \
@@ -19,4 +23,5 @@ ARG CPR_BUILD_VER
 
 ENV CPR_VERSION=$CPR_BUILD_VER
 
-ENTRYPOINT ["python", "/cpr"]
+# tini as PID 1 forwards signals; a bare Python PID 1 ignores SIGTERM until its handler is set
+ENTRYPOINT ["/usr/bin/tini", "--", "python", "/cpr"]

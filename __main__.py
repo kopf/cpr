@@ -61,7 +61,6 @@ def handle_sigterm(signum, frame):
 
 
 if __name__ == '__main__':
-    # As PID 1 in a container, SIGTERM is ignored unless a handler is installed
     signal.signal(signal.SIGTERM, handle_sigterm)
     logger = logging.getLogger()
     logger.setLevel(settings.LOGLEVEL)
