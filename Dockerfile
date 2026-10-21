@@ -1,8 +1,17 @@
 FROM python:3.11-slim-bookworm
 
-COPY requirements.txt /cpr/
+COPY --from=ghcr.io/astral-sh/uv:0.12.23 /uv /bin/uv
 
-RUN pip install --no-cache-dir -r /cpr/requirements.txt
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_DOWNLOADS=never \
+    PATH="/cpr/.venv/bin:$PATH"
+
+WORKDIR /cpr
+
+COPY pyproject.toml uv.lock .python-version ./
+
+RUN uv sync --locked --no-dev --no-cache
 
 COPY . /cpr
 
