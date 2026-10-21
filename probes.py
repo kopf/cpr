@@ -1,6 +1,6 @@
 import logging
-import threading
 import sched
+import threading
 
 import docker
 import requests
@@ -10,7 +10,8 @@ import settings
 
 class ProbingThread(threading.Thread):
     def __init__(self, start_period, interval, retries, timeout, **kwargs):
-        super(ProbingThread, self).__init__(**kwargs)
+        kwargs.setdefault('daemon', True)
+        super().__init__(**kwargs)
         self.start_period = start_period
         self.scheduler = sched.scheduler()
         self.interval = interval
@@ -58,7 +59,7 @@ class ProbingThread(threading.Thread):
 
 class HTTPProbe(ProbingThread):
     def __init__(self, url, *args, user_headers=None, **kwargs):
-        super(HTTPProbe, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.url = url
         self.headers = {
             'User-Agent': f'cpr/{settings.CPR_VERSION}'

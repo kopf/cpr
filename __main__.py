@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 import json
 import logging
-import time
 import os
+import signal
 import sys
+import time
 
 import docker
 
-from probes import HTTPProbe
 import settings
+from probes import HTTPProbe
 
 
 def scan_containers():
@@ -54,7 +55,14 @@ def main():
         time.sleep(settings.REFRESH_TIME)
 
 
+def handle_sigterm(signum, frame):
+    logging.info('Received SIGTERM, shutting down...')
+    sys.exit(0)
+
+
 if __name__ == '__main__':
+    # As PID 1 in a container, SIGTERM is ignored unless a handler is installed
+    signal.signal(signal.SIGTERM, handle_sigterm)
     logger = logging.getLogger()
     logger.setLevel(settings.LOGLEVEL)
     log_formatter = logging.Formatter("%(asctime)s [%(levelname)s] [%(threadName)s]: %(message)s")
