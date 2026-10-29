@@ -1,14 +1,11 @@
 import logging
 import sched
-import signal
 import threading
 
 import docker
 import requests
 
 import settings
-
-TERMINATION_SIGNALS = {signal.SIGTERM, signal.SIGINT}
 
 
 class ProbingThread(threading.Thread):
@@ -24,15 +21,6 @@ class ProbingThread(threading.Thread):
         self.unhealthy = threading.Event()
         self.restarting = False
         self.client = docker.from_env()
-
-    def start(self):
-        # Python only runs signal handlers on the main thread, so a SIGTERM the kernel hands to a
-        # probe thread is never acted upon. New threads inherit the mask, so block around start().
-        previous_mask = signal.pthread_sigmask(signal.SIG_BLOCK, TERMINATION_SIGNALS)
-        try:
-            super().start()
-        finally:
-            signal.pthread_sigmask(signal.SIG_SETMASK, previous_mask)
 
     def run(self):
         self.scheduler.enter(self.start_period, 1, self.trigger)
