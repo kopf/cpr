@@ -1,8 +1,24 @@
+import signal
 import time
 from unittest import mock
 
 import responses
 
+from probes import TERMINATION_SIGNALS
+
+
+def test_probe_thread_blocks_termination_signals(httpprobe):
+    """Probe threads must block SIGTERM so the kernel delivers it to the main thread"""
+    thread_mask = []
+    with mock.patch.object(
+        httpprobe, 'run', side_effect=lambda: thread_mask.append(signal.pthread_sigmask(signal.SIG_BLOCK, set()))
+    ):
+        main_mask_before = signal.pthread_sigmask(signal.SIG_BLOCK, set())
+        httpprobe.start()
+        httpprobe.join()
+    assert TERMINATION_SIGNALS <= thread_mask[0]
+    assert signal.pthread_sigmask(signal.SIG_BLOCK, set()) == main_mask_before
+    assert not TERMINATION_SIGNALS & main_mask_before
 
 
 @responses.activate
